@@ -1,0 +1,6 @@
+[submodule "pigpio"]
+	path = pigpio
+	url = https://github.com/takamin/pigpio.git
+[submodule "daemonize"]
+	path = daemonize
+	url = https://github.com/takamin/daemonize
