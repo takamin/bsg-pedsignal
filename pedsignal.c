@@ -69,11 +69,11 @@ int daemon_main(int argc, char* argv[], char* envp[])
 	GPIO_PORT* GPIO_LIGHT_CAR_BLUE = gpio_port_output(2);
 	GPIO_PORT* GPIO_LIGHT_CAR_YELLOW = gpio_port_output(3);
 	GPIO_PORT* GPIO_LIGHT_CAR_RED = gpio_port_output(4);
-	GPIO_PORT* GPIO_LIGHT_PED_WALK = gpio_port_output(14);
-	GPIO_PORT* GPIO_LIGHT_PED_STOP = gpio_port_output(15);
-	GPIO_PORT* GPIO_DISP_PED_PUSH = gpio_port_output(17);
-	GPIO_PORT* GPIO_DISP_PED_WAIT = gpio_port_output(18);
-	GPIO_PORT* GPIO_PED_BUTTON = gpio_port_input_pullup(27);
+	GPIO_PORT* GPIO_LIGHT_PED_WALK = gpio_port_output(17);
+	GPIO_PORT* GPIO_LIGHT_PED_STOP = gpio_port_output(18);
+	GPIO_PORT* GPIO_DISP_PED_PUSH = gpio_port_output(27);
+	GPIO_PORT* GPIO_DISP_PED_WAIT = gpio_port_output(22);
+	GPIO_PORT* GPIO_PED_BUTTON = gpio_port_input_pullup(24);
 	
 	while(!sigterm && !sigint) {
 		int button_state = gpio_port_read(GPIO_PED_BUTTON);
