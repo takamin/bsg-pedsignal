@@ -1,21 +1,5 @@
 /*
- * GPIO ports definition
- *
- * Signal for cars
- *
- * GPIO_2 - Blue
- * GPIO_3 - Yellow
- * GPIO_4 - Red
- *
- * Signal for pedestrian
- *
- * GPIO_14 - Walk
- * GPIO_15 - Stop
- *
- * Message LED for pedestrian
- *
- * GPIO_17 - Push the button to abroad
- * GPIO_18 - Wait till the pedestrian signal turn to 'Walk'
+ * The 'Push-to-Walk' signal emulator
  */
 #ifndef __MINGW32__
 #include <syslog.h>
@@ -29,6 +13,7 @@
 #include "gpio_port.h"
 #include "statemac.h"
 
+/* GPIO port objects */
 GPIO_PORT* GPIO_LIGHT_CAR_BLUE = 0;
 GPIO_PORT* GPIO_LIGHT_CAR_YELLOW = 0;
 GPIO_PORT* GPIO_LIGHT_CAR_RED = 0;
@@ -37,6 +22,8 @@ GPIO_PORT* GPIO_LIGHT_PED_STOP = 0;
 GPIO_PORT* GPIO_DISP_PED_PUSH = 0;
 GPIO_PORT* GPIO_DISP_PED_WAIT = 0;
 GPIO_PORT* GPIO_PED_BUTTON = 0;
+
+/* signal control routine */
 
 void signal_vehicle_blue(void) {
     gpio_port_write(GPIO_LIGHT_CAR_BLUE, 1);
@@ -85,6 +72,8 @@ int is_button_pushed(void) {
     return pushed;
 }
 
+/* TIMER DURATIONS */
+
                 /* VEHICLE  PEDESTRIAN      */
 #define T1 15   /* BLUE     RED             */
 #define T2 5    /* YELLOW   RED             */
@@ -92,7 +81,9 @@ int is_button_pushed(void) {
 #define T4 10   /* RED      BLINKING BLUE   */
 
 #define MICROSEC_PER_SECONDS 1000000
+
 int timer_count = 0;
+
 void timer_increment(int uS)
 {
     timer_count += uS;
@@ -108,6 +99,7 @@ int timer_is_timeup(int uS)
     }
     return 0;
 }
+
 void sVB0_enter(struct transtate_t* transtate);
 void sVB0_run(struct transtate_t* transtate);
 void sVB0_leave(struct transtate_t* transtate);
@@ -143,7 +135,7 @@ STATEMAC state_machine;
 
 void sVB0_enter(struct transtate_t* transtate)
 {
-    dlog(LOG_INFO, "ENTER sVB0\n");
+    dlog(LOG_INFO, "pedsignal enter state sVB0\n");
     timer_reset();
 }
 void sVB0_run(struct transtate_t* transtate)
@@ -161,7 +153,7 @@ void sVB0_leave(struct transtate_t* transtate)
 
 void sVB1_enter(struct transtate_t* transtate)
 {
-    dlog(LOG_INFO, "ENTER sVB1\n");
+    dlog(LOG_INFO, "pedsignal enter state sVB1\n");
 }
 void sVB1_run(struct transtate_t* transtate)
 {
@@ -178,7 +170,7 @@ void sVB1_leave(struct transtate_t* transtate)
 
 void sVY_enter(struct transtate_t* transtate)
 {
-    dlog(LOG_INFO, "ENTER sVY\n");
+    dlog(LOG_INFO, "pedsignal enter state sVY\n");
     timer_reset();
 }
 void sVY_run(struct transtate_t* transtate)
@@ -196,7 +188,7 @@ void sVY_leave(struct transtate_t* transtate)
 
 void sPB0_enter(struct transtate_t* transtate)
 {
-    dlog(LOG_INFO, "ENTER sPB0\n");
+    dlog(LOG_INFO, "pedsignal enter state sPB0\n");
     timer_reset();
 }
 void sPB0_run(struct transtate_t* transtate)
@@ -214,7 +206,7 @@ void sPB0_leave(struct transtate_t* transtate)
 
 void sPY0_enter(struct transtate_t* transtate)
 {
-    dlog(LOG_INFO, "ENTER sPY0\n");
+    dlog(LOG_INFO, "pedsignal enter state sPY0\n");
     timer_reset();
 }
 void sPY0_run(struct transtate_t* transtate)
@@ -239,7 +231,7 @@ void sPY0_leave(struct transtate_t* transtate)
 
 void sPY1_enter(struct transtate_t* transtate)
 {
-    dlog(LOG_INFO, "ENTER sPY1\n");
+    dlog(LOG_INFO, "pedsignal enter state sPY1\n");
 }
 void sPY1_run(struct transtate_t* transtate)
 {
@@ -256,7 +248,7 @@ void sPY1_run(struct transtate_t* transtate)
 }
 void sPY1_leave(struct transtate_t* transtate)
 {
-    dlog(LOG_INFO, "LEAVE sPY1\n");
+    dlog(LOG_INFO, "pedsignal leave state sPY1\n");
     timer_reset();
 }
 
@@ -266,17 +258,17 @@ static volatile int sighup = 0;
 
 static void handle_sigint(int sig)
 {
-    dlog(LOG_INFO, "SIGINT received.\n");
+    dlog(LOG_INFO, "pedsignal SIGINT received.\n");
     sigint = 1;
 }
 static void handle_sigterm(int sig)
 {
-    dlog(LOG_INFO, "SIGTERM received.\n");
+    dlog(LOG_INFO, "pedsignal SIGTERM received.\n");
     sigterm = 1;
 }
 static void handle_sighup(int sig)
 {
-    dlog(LOG_INFO, "SIGHUP received.\n");
+    dlog(LOG_INFO, "pedsignal SIGHUP received.\n");
     sighup = 1;
 }
 
@@ -284,15 +276,15 @@ int daemon_main(int argc, char* argv[], char* envp[])
 {
     dlog(LOG_INFO, "pedsignal started.\n");
     if (signal(SIGINT, handle_sigint) == SIG_ERR) {
-        dlog(LOG_ERR, "fail to setup SIGINT.\n");
+        dlog(LOG_ERR, "pedsignal fail to setup SIGINT.\n");
         return 2;
     } else
     if (signal(SIGTERM, handle_sigterm) == SIG_ERR) {
-        dlog(LOG_ERR, "fail to setup SIGTERM.\n");
+        dlog(LOG_ERR, "pedsignal fail to setup SIGTERM.\n");
         return 2;
 #ifndef __MINGW32__
     } else if (signal(SIGHUP, handle_sighup) == SIG_ERR) {
-        dlog(LOG_ERR, "fail to ignore SIGHUP.\n");
+        dlog(LOG_ERR, "pedsignal fail to ignore SIGHUP.\n");
         return 2;
 #endif
     }
