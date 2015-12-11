@@ -1,5 +1,13 @@
+#ifndef _WIN32
 #ifndef __MINGW32__
 #include <syslog.h>
+#endif
+#endif
+#ifdef _WIN32
+#define LOG_INFO 0
+void dlog(int level, char const* msg) {
+	/* NOTHING TO DO */
+}
 #endif
 #include "statemac.h"
 #include "gpio_signals.h"
