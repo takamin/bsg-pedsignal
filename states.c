@@ -154,7 +154,7 @@ void sPY1_run(struct transtate_t* transtate)
     }
     signal_vehicle_red();
     if(((timer_count / (MICROSEC_PER_SECONDS / (BLINK_FREQ * 2))) % 2) == 0) {
-        signal_pedestrian_red();
+        signal_pedestrian_blue();
     } else {
         signal_pedestrian_off();
     }
